@@ -50,7 +50,6 @@ function dragHandle(id, title) {
   element.className = 'group-drag-handle';
   element.textContent = '☰';
   element.dataset.groupId = id;
-  element.draggable = true;
   element.setAttribute('role', 'img');
   element.setAttribute('aria-label', `Drag ${title} to reorder`);
   return element;
@@ -133,42 +132,58 @@ export function renderGroupList(root, groups, { variant = 'compact', emptyMessag
 }
 
 export function bindGroupActions(root, store, refresh, announce) {
-  let draggedId = null;
-  let dragPreview = null;
-  root.addEventListener('dragstart', (event) => {
+  let activeDrag = null;
+  const clearDragState = (settle = false) => {
+    if (!activeDrag) return;
+    const { card, preview } = activeDrag;
+    card.classList.remove('is-dragging');
+    root.querySelectorAll('.is-drop-target').forEach((element) => element.classList.remove('is-drop-target'));
+    if (settle) {
+      preview.classList.add('is-settling');
+      window.setTimeout(() => preview.remove(), 140);
+    } else {
+      preview.remove();
+    }
+    activeDrag = null;
+  };
+  root.addEventListener('pointerdown', (event) => {
     const handle = event.target.closest('.group-drag-handle');
-    if (!handle) return;
-    draggedId = handle.dataset.groupId;
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', draggedId);
+    if (!handle || event.button !== 0) return;
+    event.preventDefault();
     const card = handle.closest('.group-card');
     card.classList.add('is-dragging');
-    dragPreview = card.cloneNode(true);
-    dragPreview.classList.remove('is-dragging');
-    dragPreview.classList.add('drag-preview');
-    document.body.append(dragPreview);
-    event.dataTransfer.setDragImage(dragPreview, 18, 18);
+    const rect = card.getBoundingClientRect();
+    const preview = card.cloneNode(true);
+    preview.classList.remove('is-dragging');
+    preview.classList.add('drag-preview');
+    preview.style.width = `${rect.width}px`;
+    preview.style.left = `${rect.left}px`;
+    preview.style.top = `${rect.top}px`;
+    document.body.append(preview);
+    activeDrag = { id: handle.dataset.groupId, card, handle, preview, startX: event.clientX, startY: event.clientY, targetId: null };
+    handle.setPointerCapture(event.pointerId);
   });
-  root.addEventListener('dragover', (event) => {
-    const card = event.target.closest('.group-card');
-    if (!card || !draggedId || card.dataset.groupId === draggedId) return;
-    event.preventDefault();
-    card.classList.add('is-drop-target');
+  root.addEventListener('pointermove', (event) => {
+    if (!activeDrag) return;
+    const { preview, startX, startY, id } = activeDrag;
+    preview.style.transform = `translate3d(${event.clientX - startX}px, ${event.clientY - startY}px, 0) rotate(2deg)`;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.group-card');
+    root.querySelectorAll('.is-drop-target').forEach((element) => element.classList.remove('is-drop-target'));
+    if (target && target.dataset.groupId !== id) {
+      target.classList.add('is-drop-target');
+      activeDrag.targetId = target.dataset.groupId;
+    } else {
+      activeDrag.targetId = null;
+    }
   });
-  root.addEventListener('dragleave', (event) => event.target.closest('.group-card')?.classList.remove('is-drop-target'));
-  root.addEventListener('dragend', () => {
-    draggedId = null;
-    dragPreview?.remove();
-    dragPreview = null;
-    root.querySelectorAll('.is-dragging, .is-drop-target').forEach((element) => element.classList.remove('is-dragging', 'is-drop-target'));
-  });
-  root.addEventListener('drop', async (event) => {
-    const card = event.target.closest('.group-card');
-    const sourceId = draggedId ?? event.dataTransfer.getData('text/plain');
-    if (!card || !sourceId || card.dataset.groupId === sourceId) return;
-    event.preventDefault();
+  root.addEventListener('pointercancel', () => clearDragState());
+  root.addEventListener('pointerup', async () => {
+    if (!activeDrag) return;
+    const { id, targetId } = activeDrag;
+    clearDragState(true);
+    if (!targetId) return;
     const groups = await store.loadGroups();
-    await store.reorderGroups(reorderedGroupIds(groups.map((group) => group.id), sourceId, card.dataset.groupId));
+    await store.reorderGroups(reorderedGroupIds(groups.map((group) => group.id), id, targetId));
     announce('Reordered mock groups.');
     await refresh();
   });
