@@ -20,7 +20,7 @@ Firefox removes temporary add-ons when it restarts. The project targets the curr
 
 ## Comparing the interfaces
 
-- **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the compact group list and layout selector. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
+- **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the expandable group list. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
 - **Sidebar:** choose **Open sidebar** in UX Playground or enable it through Firefox’s sidebar UI. It provides search, expandable mock tabs, and the same simulated actions as the popup.
 
 ## Mock interactions
