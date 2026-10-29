@@ -27,7 +27,10 @@ export async function removeTrackedNodes(api, provenance) {
     if (entry.marker !== MARKER) continue;
     try {
       const [node] = await api.get(entry.id);
-      if (isOwnedPrototypeNode(node, [entry])) await api.removeTree(entry.id);
+      if (isOwnedPrototypeNode(node, [entry])) {
+        if (node.type === 'folder') await api.removeTree(entry.id);
+        else await api.remove(entry.id);
+      }
     } catch {
       // A user may delete or move a prototype node; it is safe to forget it.
     }

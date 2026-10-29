@@ -32,7 +32,7 @@ test('never considers a similarly named user bookmark to be prototype-owned', ()
 test('reconciles stale prototype IDs without deleting user nodes', async () => {
   const removed = [];
   const api = {
-    async get(id) { if (id === 'gone') throw new Error('missing'); return [{ id, title: '[STG Demo] Vacatures' }]; },
+    async get(id) { if (id === 'gone') throw new Error('missing'); return [{ id, type: 'folder', title: '[STG Demo] Vacatures' }]; },
     async removeTree(id) { removed.push(id); },
   };
   const tracked = [{ id: 'gone', marker: 'stg-demo-v1' }, { id: 'kept', marker: 'stg-demo-v1' }, { id: 'user-1' }];
@@ -40,4 +40,17 @@ test('reconciles stale prototype IDs without deleting user nodes', async () => {
 
   assert.deepEqual(removed, ['kept']);
   assert.deepEqual(result, []);
+});
+
+test('uses single-item removal for bookmarks and recursive removal for folders', async () => {
+  const removed = [];
+  const api = {
+    async get(id) { return [{ id, type: id === 'folder' ? 'folder' : 'bookmark' }]; },
+    async remove(id) { removed.push(`item:${id}`); },
+    async removeTree(id) { removed.push(`tree:${id}`); },
+  };
+
+  await bookmarks.removeTrackedNodes(api, [{ id: 'bookmark', marker: 'stg-demo-v1' }, { id: 'folder', marker: 'stg-demo-v1' }]);
+
+  assert.deepEqual(removed, ['tree:folder', 'item:bookmark']);
 });
