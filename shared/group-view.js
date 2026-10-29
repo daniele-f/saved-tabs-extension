@@ -1,5 +1,14 @@
 const COLOR_VALUES = { yellow: '#d89b00', green: '#16834f', red: '#c63636', blue: '#276cc4', purple: '#7446b8' };
 
+export function reorderedGroupIds(ids, draggedId, targetId) {
+  if (draggedId === targetId) return [...ids];
+  const remaining = ids.filter((id) => id !== draggedId);
+  const targetIndex = remaining.indexOf(targetId);
+  if (targetIndex < 0 || !ids.includes(draggedId)) return [...ids];
+  remaining.splice(targetIndex, 0, draggedId);
+  return remaining;
+}
+
 export function buildGroupMutation(group, action) {
   switch (action.type) {
     case 'restore':
@@ -32,6 +41,7 @@ function button(label, action, id) {
 function groupCard(group, variant) {
   const card = document.createElement('article');
   card.className = `group-card group-card--${variant}`;
+  card.dataset.groupId = group.id;
   const summary = document.createElement('div');
   summary.className = 'group-summary';
   const dot = document.createElement('span');
@@ -43,11 +53,16 @@ function groupCard(group, variant) {
   const meta = document.createElement('span');
   meta.className = 'group-meta';
   meta.textContent = `${group.tabs.length} tabs · ${group.state}`;
-  summary.append(dot, title, meta);
+  const dragHandle = button('☰', 'drag', group.id);
+  dragHandle.classList.add('group-drag-handle');
+  dragHandle.draggable = true;
+  dragHandle.setAttribute('aria-label', `Drag ${group.title} to reorder`);
+  dragHandle.title = 'Drag to reorder';
+  summary.append(dot, title, meta, dragHandle);
   const actions = document.createElement('div');
   actions.className = 'group-actions';
   actions.append(button(group.state === 'closed' ? 'Restore' : 'Save & close', group.state === 'closed' ? 'restore' : 'save-close', group.id));
-  actions.append(button('Rename', 'rename', group.id), button('Color', 'color', group.id), button('Delete', 'delete', group.id), button('↑', 'move-up', group.id), button('↓', 'move-down', group.id));
+  actions.append(button('Rename', 'rename', group.id), button('Color', 'color', group.id), button('Delete', 'delete', group.id));
   const details = document.createElement('details');
   details.className = 'group-details';
   const detailsSummary = document.createElement('summary');
@@ -76,6 +91,36 @@ export function renderGroupList(root, groups, { variant = 'compact', emptyMessag
 }
 
 export function bindGroupActions(root, store, refresh, announce) {
+  let draggedId = null;
+  root.addEventListener('dragstart', (event) => {
+    const handle = event.target.closest('.group-drag-handle');
+    if (!handle) return;
+    draggedId = handle.dataset.groupId;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', draggedId);
+    handle.closest('.group-card').classList.add('is-dragging');
+  });
+  root.addEventListener('dragover', (event) => {
+    const card = event.target.closest('.group-card');
+    if (!card || !draggedId || card.dataset.groupId === draggedId) return;
+    event.preventDefault();
+    card.classList.add('is-drop-target');
+  });
+  root.addEventListener('dragleave', (event) => event.target.closest('.group-card')?.classList.remove('is-drop-target'));
+  root.addEventListener('dragend', () => {
+    draggedId = null;
+    root.querySelectorAll('.is-dragging, .is-drop-target').forEach((element) => element.classList.remove('is-dragging', 'is-drop-target'));
+  });
+  root.addEventListener('drop', async (event) => {
+    const card = event.target.closest('.group-card');
+    const sourceId = draggedId ?? event.dataTransfer.getData('text/plain');
+    if (!card || !sourceId || card.dataset.groupId === sourceId) return;
+    event.preventDefault();
+    const groups = await store.loadGroups();
+    await store.reorderGroups(reorderedGroupIds(groups.map((group) => group.id), sourceId, card.dataset.groupId));
+    announce('Reordered mock groups.');
+    await refresh();
+  });
   root.addEventListener('click', async (event) => {
     const control = event.target.closest('button[data-action]');
     if (!control) return;
@@ -88,14 +133,7 @@ export function bindGroupActions(root, store, refresh, announce) {
         if (!window.confirm(`Delete the mock group “${group.title}”?`)) return;
         await store.deleteGroup(groupId);
         announce(`Deleted mock group “${group.title}”.`);
-      } else if (action === 'move-up' || action === 'move-down') {
-        const index = groups.findIndex((entry) => entry.id === groupId);
-        const target = action === 'move-up' ? index - 1 : index + 1;
-        if (target < 0 || target >= groups.length) return;
-        [groups[index], groups[target]] = [groups[target], groups[index]];
-        await store.reorderGroups(groups.map((entry) => entry.id));
-        announce('Reordered mock groups.');
-      } else {
+      } else if (action !== 'drag') {
         let request = { type: action };
         if (action === 'rename') request = { type: action, title: window.prompt('Mock group name', group.title) };
         if (action === 'color') request = { type: action, color: window.prompt('Color: yellow, green, red, blue, or purple', group.color) };

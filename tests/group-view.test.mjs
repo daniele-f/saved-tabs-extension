@@ -26,3 +26,11 @@ test('builds a save-and-close mutation for an open mock group', () => {
 test('rejects an empty mock-group rename', () => {
   assert.throws(() => groupView.buildGroupMutation(vacatures, { type: 'rename', title: '   ' }), /title/i);
 });
+
+test('moves a dragged group to the drop target position', () => {
+  assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python', 'peppol'], 'peppol', 'vacatures'), ['peppol', 'vacatures', 'python']);
+});
+
+test('does not reorder when the drop target is the dragged group', () => {
+  assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python'], 'python', 'python'), ['vacatures', 'python']);
+});
