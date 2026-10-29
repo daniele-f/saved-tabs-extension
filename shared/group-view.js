@@ -38,6 +38,17 @@ function button(label, action, id) {
   return element;
 }
 
+function dragHandle(id, title) {
+  const element = document.createElement('span');
+  element.className = 'group-drag-handle';
+  element.textContent = '☰';
+  element.dataset.groupId = id;
+  element.draggable = true;
+  element.setAttribute('role', 'img');
+  element.setAttribute('aria-label', `Drag ${title} to reorder`);
+  return element;
+}
+
 function groupCard(group, variant) {
   const card = document.createElement('article');
   card.className = `group-card group-card--${variant}`;
@@ -53,12 +64,7 @@ function groupCard(group, variant) {
   const meta = document.createElement('span');
   meta.className = 'group-meta';
   meta.textContent = `${group.tabs.length} tabs · ${group.state}`;
-  const dragHandle = button('☰', 'drag', group.id);
-  dragHandle.classList.add('group-drag-handle');
-  dragHandle.draggable = true;
-  dragHandle.setAttribute('aria-label', `Drag ${group.title} to reorder`);
-  dragHandle.title = 'Drag to reorder';
-  summary.append(dot, title, meta, dragHandle);
+  summary.append(dot, title, meta, dragHandle(group.id, group.title));
   const actions = document.createElement('div');
   actions.className = 'group-actions';
   actions.append(button(group.state === 'closed' ? 'Restore' : 'Save & close', group.state === 'closed' ? 'restore' : 'save-close', group.id));
