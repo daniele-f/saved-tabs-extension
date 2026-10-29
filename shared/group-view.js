@@ -64,7 +64,7 @@ function groupCard(group, variant) {
   const meta = document.createElement('span');
   meta.className = 'group-meta';
   meta.textContent = `${group.tabs.length} tabs · ${group.state}`;
-  summary.append(dot, title, meta, dragHandle(group.id, group.title));
+  summary.append(dot, title, dragHandle(group.id, group.title));
   const actions = document.createElement('div');
   actions.className = 'group-actions';
   actions.append(button(group.state === 'closed' ? 'Restore' : 'Save & close', group.state === 'closed' ? 'restore' : 'save-close', group.id));
@@ -72,7 +72,9 @@ function groupCard(group, variant) {
   const details = document.createElement('details');
   details.className = 'group-details';
   const detailsSummary = document.createElement('summary');
-  detailsSummary.textContent = 'Show mock tabs';
+  const detailsLabel = document.createElement('span');
+  detailsLabel.textContent = 'Show mock tabs';
+  detailsSummary.append(detailsLabel, meta);
   const list = document.createElement('ul');
   for (const tab of group.tabs) {
     const item = document.createElement('li');
