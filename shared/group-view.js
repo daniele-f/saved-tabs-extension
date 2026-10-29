@@ -28,6 +28,13 @@ export function buildGroupMutation(group, action) {
   }
 }
 
+export function buildGroupEditPatch(group, { title, color }) {
+  return {
+    ...buildGroupMutation(group, { type: 'rename', title }).patch,
+    ...buildGroupMutation(group, { type: 'color', color }).patch,
+  };
+}
+
 function button(label, action, id) {
   const element = document.createElement('button');
   element.type = 'button';
@@ -68,7 +75,31 @@ function groupCard(group, variant) {
   const actions = document.createElement('div');
   actions.className = 'group-actions';
   actions.append(button(group.state === 'closed' ? 'Restore' : 'Save & close', group.state === 'closed' ? 'restore' : 'save-close', group.id));
-  actions.append(button('Rename', 'rename', group.id), button('Color', 'color', group.id), button('Delete', 'delete', group.id));
+  actions.append(button('Edit', 'edit', group.id), button('Delete', 'delete', group.id));
+  const editor = document.createElement('form');
+  editor.className = 'group-editor';
+  editor.dataset.groupId = group.id;
+  editor.hidden = true;
+  const titleInput = document.createElement('input');
+  titleInput.name = 'title';
+  titleInput.value = group.title;
+  titleInput.setAttribute('aria-label', 'Group name');
+  const colorSelect = document.createElement('select');
+  colorSelect.name = 'color';
+  colorSelect.setAttribute('aria-label', 'Group color');
+  Object.keys(COLOR_VALUES).forEach((color) => {
+    const option = document.createElement('option');
+    option.value = color;
+    option.textContent = color[0].toUpperCase() + color.slice(1);
+    option.selected = color === group.color;
+    colorSelect.append(option);
+  });
+  const save = document.createElement('button');
+  save.type = 'submit';
+  save.className = 'group-action';
+  save.textContent = 'Save';
+  const cancel = button('Cancel', 'cancel-edit', group.id);
+  editor.append(titleInput, colorSelect, save, cancel);
   const details = document.createElement('details');
   details.className = 'group-details';
   const detailsSummary = document.createElement('summary');
@@ -84,7 +115,7 @@ function groupCard(group, variant) {
   details.append(detailsSummary, list);
   const primary = document.createElement('div');
   primary.className = 'group-primary';
-  primary.append(summary, actions);
+  primary.append(summary, actions, editor);
   card.append(primary, details);
   return card;
 }
@@ -132,6 +163,22 @@ export function bindGroupActions(root, store, refresh, announce) {
     announce('Reordered mock groups.');
     await refresh();
   });
+  root.addEventListener('submit', async (event) => {
+    const editor = event.target.closest('.group-editor');
+    if (!editor) return;
+    event.preventDefault();
+    const groups = await store.loadGroups();
+    const group = groups.find((entry) => entry.id === editor.dataset.groupId);
+    if (!group) return;
+    try {
+      const patch = buildGroupEditPatch(group, Object.fromEntries(new FormData(editor)));
+      await store.updateGroup(group.id, patch);
+      announce(`Updated mock group “${patch.title}”.`);
+      await refresh();
+    } catch (error) {
+      announce(error.message);
+    }
+  });
   root.addEventListener('click', async (event) => {
     const control = event.target.closest('button[data-action]');
     if (!control) return;
@@ -140,15 +187,21 @@ export function bindGroupActions(root, store, refresh, announce) {
     const group = groups.find((entry) => entry.id === groupId);
     if (!group) return;
     try {
-      if (action === 'delete') {
+      if (action === 'edit') {
+        root.querySelectorAll('.group-editor').forEach((editor) => { editor.hidden = true; });
+        const editor = control.closest('.group-card').querySelector('.group-editor');
+        editor.hidden = false;
+        editor.querySelector('input[name="title"]').focus();
+        return;
+      } else if (action === 'cancel-edit') {
+        control.closest('.group-editor').hidden = true;
+        return;
+      } else if (action === 'delete') {
         if (!window.confirm(`Delete the mock group “${group.title}”?`)) return;
         await store.deleteGroup(groupId);
         announce(`Deleted mock group “${group.title}”.`);
       } else if (action !== 'drag') {
         let request = { type: action };
-        if (action === 'rename') request = { type: action, title: window.prompt('Mock group name', group.title) };
-        if (action === 'color') request = { type: action, color: window.prompt('Color: yellow, green, red, blue, or purple', group.color) };
-        if ((action === 'rename' && request.title === null) || (action === 'color' && request.color === null)) return;
         const mutation = buildGroupMutation(group, request);
         await store.updateGroup(groupId, mutation.patch);
         announce(mutation.notice);

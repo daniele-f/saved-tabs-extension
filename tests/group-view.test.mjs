@@ -34,3 +34,10 @@ test('moves a dragged group to the drop target position', () => {
 test('does not reorder when the drop target is the dragged group', () => {
   assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python'], 'python', 'python'), ['vacatures', 'python']);
 });
+
+test('builds one validated patch for an edited name and color', () => {
+  assert.deepEqual(groupView.buildGroupEditPatch(vacatures, { title: 'Jobs', color: 'purple' }), {
+    title: 'Jobs',
+    color: 'purple',
+  });
+});
