@@ -80,7 +80,10 @@ function groupCard(group, variant) {
     list.append(item);
   }
   details.append(detailsSummary, list);
-  card.append(summary, actions, details);
+  const primary = document.createElement('div');
+  primary.className = 'group-primary';
+  primary.append(summary, actions);
+  card.append(primary, details);
   return card;
 }
 
