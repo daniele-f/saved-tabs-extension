@@ -134,13 +134,20 @@ export function renderGroupList(root, groups, { variant = 'compact', emptyMessag
 
 export function bindGroupActions(root, store, refresh, announce) {
   let draggedId = null;
+  let dragPreview = null;
   root.addEventListener('dragstart', (event) => {
     const handle = event.target.closest('.group-drag-handle');
     if (!handle) return;
     draggedId = handle.dataset.groupId;
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', draggedId);
-    handle.closest('.group-card').classList.add('is-dragging');
+    const card = handle.closest('.group-card');
+    card.classList.add('is-dragging');
+    dragPreview = card.cloneNode(true);
+    dragPreview.classList.remove('is-dragging');
+    dragPreview.classList.add('drag-preview');
+    document.body.append(dragPreview);
+    event.dataTransfer.setDragImage(dragPreview, 18, 18);
   });
   root.addEventListener('dragover', (event) => {
     const card = event.target.closest('.group-card');
@@ -151,6 +158,8 @@ export function bindGroupActions(root, store, refresh, announce) {
   root.addEventListener('dragleave', (event) => event.target.closest('.group-card')?.classList.remove('is-drop-target'));
   root.addEventListener('dragend', () => {
     draggedId = null;
+    dragPreview?.remove();
+    dragPreview = null;
     root.querySelectorAll('.is-dragging, .is-drop-target').forEach((element) => element.classList.remove('is-dragging', 'is-drop-target'));
   });
   root.addEventListener('drop', async (event) => {
