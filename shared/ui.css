@@ -10,6 +10,7 @@ button, select, input { font: inherit; } button { cursor: pointer; } .toolbar { 
 .group-meta { margin-left:auto; color:light-dark(#5f6978,#c1c8d2); font-size:.75rem; white-space:nowrap; }.group-actions { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
 .group-action, .link-button { border:1px solid light-dark(#b5c4e8,#6175a0); background:light-dark(#f1f5ff,#2c3b5c); color:light-dark(#244c9a,#cfdbff); border-radius:4px; padding:4px 6px; font-size:.75rem; }
 .group-editor { display:flex; gap:5px; align-items:center; flex-wrap:wrap; margin-top:8px; }.group-editor input, .group-editor select { min-width:0; padding:4px 6px; border:1px solid light-dark(#b5c4e8,#6175a0); border-radius:4px; background:transparent; color:inherit; font:inherit; font-size:.8rem; }.group-editor input { flex:1 1 110px; }.group-editor select { flex:0 1 90px; }
+.group-editor[hidden] { display:none; }
 .group-details { margin-top:7px; font-size:.78rem; } .group-details summary { display:flex; align-items:center; gap:6px; cursor:pointer; } .group-details ul { margin:5px 0 0; padding-left:19px; color:light-dark(#526071,#bec7d5); }.status { min-height:1.4em; margin:9px 0 0; font-size:.78rem; color:light-dark(#345a9c,#bed0ff); }.empty-state { color:light-dark(#5f6978,#bac3d0); }
 .footer-link { display:block; margin-top:10px; font-size:.8rem; color:light-dark(#345a9c,#bed0ff); }
 .group-card--expandable .group-details { border-top:1px solid light-dark(#e0e4ea,#4c5664); padding-top:6px; }
