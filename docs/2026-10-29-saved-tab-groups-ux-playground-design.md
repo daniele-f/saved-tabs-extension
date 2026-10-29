@@ -1,5 +1,7 @@
 # Saved Tab Groups UX Playground — Design
 
+> **Decision update:** The native-bookmark experiments were removed at the user's request after live evaluation. The implemented prototype now contains only the toolbar-popup and sidebar comparisons and does not request the Bookmarks API.
+
 ## Intent
 
 Build an installable Firefox Desktop Manifest V3 WebExtension that compares supported user-interface choices for a future saved-tab-groups product. It is a UX and feasibility prototype: it uses editable local mock records only and never reads, creates, groups, ungroups, opens, closes, or otherwise changes browser tabs or native Firefox tab groups.
