@@ -22,5 +22,9 @@
     "page": "options/options.html",
     "open_in_tab": true
   },
-  "background": { "service_worker": "background/service-worker.js", "type": "module" }
+  "background": {
+    "scripts": ["background/service-worker.js"],
+    "persistent": false,
+    "type": "module"
+  }
 }
