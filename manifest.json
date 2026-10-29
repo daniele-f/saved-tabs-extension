@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Saved Tab Groups — UX Playground",
+  "version": "0.1.0",
+  "description": "A safe mock-data playground for comparing saved tab group interfaces.",
+  "browser_specific_settings": {
+    "gecko": { "id": "saved-tab-groups-ux-playground@daniele-f" }
+  },
+  "permissions": ["storage", "bookmarks", "menus"],
+  "icons": { "16": "icons/saved-groups.svg", "32": "icons/saved-groups.svg", "48": "icons/saved-groups.svg" },
+  "action": {
+    "default_title": "Saved Tab Groups — UX Playground",
+    "default_icon": "icons/saved-groups.svg",
+    "default_popup": "popup/popup.html",
+    "default_area": "personaltoolbar"
+  },
+  "sidebar_action": {
+    "default_title": "Saved tab groups",
+    "default_panel": "sidebar/sidebar.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "background": { "service_worker": "background/service-worker.js", "type": "module" }
+}
