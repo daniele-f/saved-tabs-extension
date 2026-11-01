@@ -24,7 +24,12 @@ export async function loadCurrentWindowGroups(browserApi) {
       color: nativeGroupColor(group.color),
       collapsed: Boolean(group.collapsed),
       state: group.collapsed ? 'collapsed' : 'expanded',
-      tabs: tabs.map((tab) => ({ id: tab.id, title: tab.title || 'Untitled tab', url: tab.url })),
+      tabs: tabs.map((tab) => ({
+        id: tab.id,
+        title: tab.title || 'Untitled tab',
+        url: tab.url,
+        favIconUrl: tab.favIconUrl,
+      })),
     }));
 }
 

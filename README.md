@@ -14,14 +14,13 @@ The prototype does **not** create or modify native bookmarks.
 2. Choose **This Firefox**.
 3. Select **Load Temporary Add-on**.
 4. Choose this project’s `manifest.json`.
-5. Open the extension’s **Manage** entry, then **Preferences** to open its settings page.
 
 Firefox removes temporary add-ons when it restarts. The project targets the current Firefox Desktop release.
 
 ## Comparing the interfaces
 
 - **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the expandable group list. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
-- **Sidebar:** choose **Open sidebar** in Settings or enable it through Firefox’s sidebar UI. It is a persistent, searchable view of groups from the current Firefox window and refreshes when those groups change.
+- **Sidebar:** enable it through Firefox’s sidebar UI. It is a persistent, searchable view of groups from the current Firefox window and refreshes when those groups change.
 
 ## Active and inactive groups
 
