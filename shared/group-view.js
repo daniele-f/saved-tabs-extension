@@ -193,7 +193,8 @@ export function bindGroupActions(root, store, refresh, announce) {
   root.addEventListener('pointermove', (event) => {
     if (!activeDrag) return;
     const { preview, startX, startY } = activeDrag;
-    preview.style.transform = `translate3d(${event.clientX - startX}px, ${event.clientY - startY}px, 0) rotate(2deg)`;
+    preview.style.setProperty('--drag-x', `${event.clientX - startX}px`);
+    preview.style.setProperty('--drag-y', `${event.clientY - startY}px`);
     updateDropPosition(event.clientX, event.clientY);
   });
   root.addEventListener('pointercancel', () => clearDragState());
