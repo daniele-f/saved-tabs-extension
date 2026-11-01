@@ -11,7 +11,7 @@ test('ships a single expandable popup layout without a layout picker', async () 
   assert.equal(html.includes('Minimal list'), false);
 });
 
-test('connects both live panels to the native group reader instead of mock storage', async () => {
+test('connects both panels to live groups and inactive snapshots', async () => {
   const [popup, sidebar] = await Promise.all([
     readFile(new URL('../popup/popup.js', import.meta.url), 'utf8'),
     readFile(new URL('../sidebar/sidebar.js', import.meta.url), 'utf8'),
@@ -19,7 +19,11 @@ test('connects both live panels to the native group reader instead of mock stora
 
   for (const script of [popup, sidebar]) {
     assert.match(script, /native-group-reader/);
-    assert.doesNotMatch(script, /group-store/);
-    assert.match(script, /mode:\s*'live'/);
+    assert.match(script, /inactive-group-store/);
+    assert.match(script, /group-lifecycle/);
+    assert.match(script, /renderGroupSections/);
   }
+  assert.match(sidebar, /storage\.onChanged/);
+  assert.doesNotMatch(popup, /tabs\.(remove|create|group)/);
+  assert.doesNotMatch(sidebar, /tabs\.(remove|create|group)/);
 });

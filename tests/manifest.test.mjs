@@ -20,5 +20,5 @@ test('uses the Saved Groups icon for both Firefox entry points', async () => {
 test('requests only read access needed for native tab groups', async () => {
   const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
 
-  assert.deepEqual(manifest.permissions, ['tabGroups', 'tabs']);
+  assert.deepEqual(manifest.permissions, ['storage', 'tabGroups', 'tabs']);
 });

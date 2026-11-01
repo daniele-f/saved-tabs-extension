@@ -6,7 +6,7 @@
   "browser_specific_settings": {
     "gecko": { "id": "saved-tab-groups-ux-playground@daniele-f" }
   },
-  "permissions": ["tabGroups", "tabs"],
+  "permissions": ["storage", "tabGroups", "tabs"],
   "icons": { "16": "icons/saved-groups.svg", "32": "icons/saved-groups.svg", "48": "icons/saved-groups.svg" },
   "action": {
     "default_title": "Saved Tab Groups — UX Playground",

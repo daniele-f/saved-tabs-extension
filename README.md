@@ -4,7 +4,7 @@ A Firefox Desktop Manifest V3 extension that shows the tab groups in your curren
 
 ## Safety boundary
 
-The extension reads native Firefox group metadata and tab titles for the current browser window. It never creates, opens, closes, groups, ungroups, moves, renames, recolors, expands, collapses, or rearranges browser tabs or groups.
+The extension reads native Firefox group metadata and tab titles for the current browser window. When you explicitly confirm **Close group**, it saves that group’s ordered tab URLs, title, color, and collapsed state locally, then closes its tabs. **Restore group** recreates the tabs and their native group in the current window.
 
 The prototype does **not** create or modify native bookmarks.
 
@@ -23,18 +23,18 @@ Firefox removes temporary add-ons when it restarts. The project targets the curr
 - **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the expandable group list. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
 - **Sidebar:** choose **Open sidebar** in Settings or enable it through Firefox’s sidebar UI. It is a persistent, searchable view of groups from the current Firefox window and refreshes when those groups change.
 
-## Native data
+## Active and inactive groups
 
-Create and manage groups through Firefox’s normal tab-group UI. The extension shows their native title, color, collapsed/expanded state, member-tab count, and expandable tab titles. Groups in other Firefox windows are not shown.
+Create groups through Firefox’s normal tab-group UI. **Active groups** are native groups in the current window. **Inactive groups** are local snapshots made only when you close an active group through this extension. A snapshot is retained until its complete restore succeeds; if Firefox interrupts a close because of unsaved changes, its snapshot remains available as a safety copy.
 
 ## Feasibility comparison
 
 | Surface | Firefox APIs | Fully supported | Limitation |
 | --- | --- | --- | --- |
-| Toolbar popup | `action`, `tabGroups`, `tabs` | One extension action, read-only current-window group view | Firefox controls toolbar placement and popup closes on blur |
-| Sidebar | `sidebarAction`, `tabGroups`, `tabs` | Persistent searchable current-window group view | Users control visibility; styling applies only inside the extension panel |
+| Toolbar popup | `action`, `tabGroups`, `tabs`, `storage` | Close/restore current-window group view | Firefox controls toolbar placement and popup closes on blur |
+| Sidebar | `sidebarAction`, `tabGroups`, `tabs`, `storage` | Persistent searchable Active/Inactive group view | Users control visibility; styling applies only inside the extension panel |
 
-Firefox’s native tab-group APIs provide the current collapsed/expanded state. This extension deliberately has no write path.
+Firefox’s native tab-group APIs provide the current collapsed/expanded state. The extension uses a deliberately narrow write path: it only closes a user-confirmed group and restores an extension-owned inactive snapshot. Snapshot data remains local to this Firefox profile.
 
 ## Development checks
 
