@@ -28,7 +28,7 @@ Requires Firefox Desktop 140 or later. Create groups using Firefox's native tab-
 
 Plain JavaScript, HTML, CSS, and SVG; no compilation, minification, remote executable code, or build dependencies. The release ZIP contains the original runtime sources. No account or credentials required.
 
-Create a native Firefox group with two ordinary https tabs. Open the extension popup or sidebar, expand the group, search for a tab, and click a result to focus it. Select Save & close, confirm, and verify the inactive snapshot. Select Restore and verify the native group returns and the snapshot disappears. Test cancellation of the close confirmation as well.
+Create a native Firefox group with two ordinary https tabs. Open the extension popup or sidebar, expand the group, search for a tab, and click a result to focus it. Select Save & Hide, confirm, and verify the inactive snapshot. Select Restore and verify the native group returns and the snapshot disappears. Test cancellation of the close confirmation as well.
 
 ## Submission checklist
 

@@ -4,7 +4,7 @@ A Firefox Desktop Manifest V3 extension that shows the tab groups in your curren
 
 ## Safety boundary
 
-The extension reads native Firefox group metadata and tab titles for the current browser window. When you explicitly confirm **Save & close**, it saves that group’s ordered tab URLs, title, color, and collapsed state locally, then closes its tabs. **Restore** recreates the tabs and their native group in the current window.
+The extension reads native Firefox group metadata and tab titles for the current browser window. When you explicitly confirm **Save & Hide**, it saves that group’s ordered tab URLs, title, color, and collapsed state locally, then closes its tabs. **Restore** recreates the tabs and their native group in the current window.
 
 The prototype does **not** create or modify native bookmarks.
 

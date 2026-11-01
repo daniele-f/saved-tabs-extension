@@ -2,7 +2,7 @@ const COLOR_VALUES = { grey: '#718096', blue: '#276cc4', red: '#c63636', yellow:
 const CHIP_VALUES = { grey: '#d7dce4', blue: '#aac9ff', red: '#ffb8b8', yellow: '#ffe18b', green: '#9de4b9', pink: '#ffc0dd', purple: '#e5b9ff', cyan: '#a4ebef', orange: '#ffc492' };
 
 export function groupCardCapabilities(section) {
-  if (section === 'active') return { actionLabel: 'Save & close', detailsLabel: 'Show tabs' };
+  if (section === 'active') return { actionLabel: 'Save & Hide', detailsLabel: 'Show tabs' };
   if (section === 'inactive') return { actionLabel: 'Restore', detailsLabel: 'Show tabs' };
   throw new TypeError('Group cards must be active or inactive.');
 }

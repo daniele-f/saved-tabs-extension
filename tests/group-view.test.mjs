@@ -6,7 +6,7 @@ const groupView = await import(moduleUrl).catch(() => ({}));
 
 test('uses one close action for active Firefox groups', () => {
   assert.deepEqual(groupView.groupCardCapabilities('active'), {
-    actionLabel: 'Save & close',
+    actionLabel: 'Save & Hide',
     detailsLabel: 'Show tabs',
   });
 });
