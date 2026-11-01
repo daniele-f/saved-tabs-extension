@@ -2,11 +2,11 @@
   "manifest_version": 3,
   "name": "Saved Tab Groups — UX Playground",
   "version": "0.1.0",
-  "description": "An empty-state playground for saved tab group interfaces.",
+  "description": "Read-only current-window Firefox tab groups in a popup and sidebar.",
   "browser_specific_settings": {
     "gecko": { "id": "saved-tab-groups-ux-playground@daniele-f" }
   },
-  "permissions": ["storage"],
+  "permissions": ["tabGroups", "tabs"],
   "icons": { "16": "icons/saved-groups.svg", "32": "icons/saved-groups.svg", "48": "icons/saved-groups.svg" },
   "action": {
     "default_title": "Saved Tab Groups — UX Playground",
