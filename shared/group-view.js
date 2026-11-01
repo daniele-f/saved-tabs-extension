@@ -138,12 +138,9 @@ export function bindGroupActions(root, store, refresh, announce) {
       element.classList.remove('is-drop-before', 'is-drop-after');
     });
   };
-  const updateDropPosition = (clientX, clientY) => {
-    const listRect = root.getBoundingClientRect();
-    const withinList = clientX >= listRect.left - 24 && clientX <= listRect.right + 24;
+  const updateDropPosition = (clientY) => {
     clearDropPosition();
     activeDrag.hasDropPosition = false;
-    if (!withinList) return;
     const cards = [...root.querySelectorAll('.group-card')].filter((card) => card.dataset.groupId !== activeDrag.id);
     if (!cards.length) return;
     const beforeCard = cards.find((card) => {
@@ -194,7 +191,7 @@ export function bindGroupActions(root, store, refresh, announce) {
     if (!activeDrag) return;
     const { preview, startY } = activeDrag;
     preview.style.setProperty('--drag-y', `${event.clientY - startY}px`);
-    updateDropPosition(event.clientX, event.clientY);
+    updateDropPosition(event.clientY);
   });
   root.addEventListener('pointercancel', () => clearDragState());
   root.addEventListener('pointerup', async () => {
