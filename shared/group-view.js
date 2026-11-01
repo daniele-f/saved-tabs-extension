@@ -187,13 +187,12 @@ export function bindGroupActions(root, store, refresh, announce) {
     preview.style.left = `${rect.left}px`;
     preview.style.top = `${rect.top}px`;
     document.body.append(preview);
-    activeDrag = { id: handle.dataset.groupId, card, handle, preview, startX: event.clientX, startY: event.clientY, beforeId: null, hasDropPosition: false };
+    activeDrag = { id: handle.dataset.groupId, card, handle, preview, startY: event.clientY, beforeId: null, hasDropPosition: false };
     handle.setPointerCapture(event.pointerId);
   });
   root.addEventListener('pointermove', (event) => {
     if (!activeDrag) return;
-    const { preview, startX, startY } = activeDrag;
-    preview.style.setProperty('--drag-x', `${event.clientX - startX}px`);
+    const { preview, startY } = activeDrag;
     preview.style.setProperty('--drag-y', `${event.clientY - startY}px`);
     updateDropPosition(event.clientX, event.clientY);
   });
