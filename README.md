@@ -4,7 +4,7 @@ A Firefox Desktop Manifest V3 extension that shows the tab groups in your curren
 
 ## Safety boundary
 
-The extension reads native Firefox group metadata and tab titles for the current browser window. When you explicitly confirm **Close group**, it saves that group’s ordered tab URLs, title, color, and collapsed state locally, then closes its tabs. **Restore group** recreates the tabs and their native group in the current window.
+The extension reads native Firefox group metadata and tab titles for the current browser window. When you explicitly confirm **Save & close**, it saves that group’s ordered tab URLs, title, color, and collapsed state locally, then closes its tabs. **Restore** recreates the tabs and their native group in the current window.
 
 The prototype does **not** create or modify native bookmarks.
 
@@ -15,7 +15,7 @@ The prototype does **not** create or modify native bookmarks.
 3. Select **Load Temporary Add-on**.
 4. Choose this project’s `manifest.json`.
 
-Firefox removes temporary add-ons when it restarts. The project targets the current Firefox Desktop release.
+Firefox removes temporary add-ons when it restarts. Requires Firefox Desktop 140 or later.
 
 ## Comparing the interfaces
 
@@ -41,3 +41,9 @@ Firefox’s native tab-group APIs provide the current collapsed/expanded state. 
 npm test
 rg -n "browser\.(tabs|tabGroups|sessions)|chrome\.(tabs|tabGroups|sessions)" .
 ```
+
+## Release
+
+Run `npm test`, `npx --yes web-ext lint`, then `npm run package` on Windows. Upload `dist/saved-tab-groups-0.1.0.zip` to Mozilla Add-ons. The package contains runtime sources and the MIT license, without tests or development documents. No compilation is required.
+
+See [submission copy and reviewer instructions](docs/amo-listing.md), [privacy policy](PRIVACY.md), and [MIT license](LICENSE). Saved groups contain URLs rather than complete page sessions. Uninstalling the extension removes saved snapshots.
