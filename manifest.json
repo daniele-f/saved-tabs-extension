@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Saved Tab Groups — UX Playground",
   "version": "0.1.0",
-  "description": "A safe mock-data playground for comparing saved tab group interfaces.",
+  "description": "An empty-state playground for saved tab group interfaces.",
   "browser_specific_settings": {
     "gecko": { "id": "saved-tab-groups-ux-playground@daniele-f" }
   },

@@ -4,7 +4,7 @@ A Firefox Desktop Manifest V3 prototype for comparing a toolbar popup and sideba
 
 ## Safety boundary
 
-This prototype uses only local mock data. Its controls simulate state changes and visibly say so. It never reads, creates, opens, closes, groups, ungroups, or rearranges browser tabs; sample URLs are display-only and are never opened.
+This prototype starts with no group data. It never reads, creates, opens, closes, groups, ungroups, or rearranges browser tabs.
 
 The prototype does **not** create or modify native bookmarks.
 
@@ -21,11 +21,11 @@ Firefox removes temporary add-ons when it restarts. The project targets the curr
 ## Comparing the interfaces
 
 - **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the expandable group list. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
-- **Sidebar:** choose **Open sidebar** in UX Playground or enable it through Firefox’s sidebar UI. It provides search, expandable mock tabs, and the same simulated actions as the popup.
+- **Sidebar:** choose **Open sidebar** in UX Playground or enable it through Firefox’s sidebar UI. It provides the empty state and will become the persistent group browser once real data support is connected.
 
-## Mock interactions
+## Current prototype state
 
-Vacatures, Python, Peppol, Gaming, and Development are seeded from `data/default-groups.json`. Restore, Save & close, Rename, Color, Delete, reorder, and expansion change only `browser.storage.local` mock records. **Reset demonstration data** restores the seed records.
+There are no seeded demonstration groups. Create groups through Firefox’s normal tab-group UI; this prototype will remain empty until the real Firefox group-data integration is built.
 
 ## Feasibility comparison
 
@@ -34,7 +34,7 @@ Vacatures, Python, Peppol, Gaming, and Development are seeded from `data/default
 | Toolbar popup | `action`, `storage` | One extension action, popup UI | Firefox controls toolbar placement and popup closes on blur |
 | Sidebar | `sidebarAction`, `storage` | Persistent searchable extension panel | Users control visibility; styling applies only inside the extension panel |
 
-Firefox supports native tab-group APIs for a future implementation, but this prototype deliberately does not request or call them. It cannot establish whether a final product can exactly restore a native group or read real open/closed group state; its colored labels and states are mock-only.
+Firefox supports native tab-group APIs for a future implementation, but this prototype deliberately does not request or call them. The next implementation phase will establish whether a final product can exactly restore a native group or read real open/closed group state.
 
 ## Development checks
 

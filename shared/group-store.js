@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'mockGroups';
+const STORAGE_KEY = 'savedGroups';
 const COLORS = new Set(['yellow', 'green', 'red', 'blue', 'purple']);
 const STATES = new Set(['open', 'closed']);
 
@@ -20,7 +20,6 @@ function isGroup(group) {
 
 function isValidGroupList(groups) {
   return Array.isArray(groups)
-    && groups.length > 0
     && groups.every(isGroup)
     && new Set(groups.map((group) => group.id)).size === groups.length;
 }

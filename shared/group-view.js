@@ -119,7 +119,7 @@ function groupCard(group, variant) {
   return card;
 }
 
-export function renderGroupList(root, groups, { variant = 'compact', emptyMessage = 'No mock groups match.' } = {}) {
+export function renderGroupList(root, groups, { variant = 'compact', emptyMessage = 'No saved tab groups yet.' } = {}) {
   root.replaceChildren();
   if (!groups.length) {
     const empty = document.createElement('p');
