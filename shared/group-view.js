@@ -1,12 +1,13 @@
 const COLOR_VALUES = { grey: '#718096', blue: '#276cc4', red: '#c63636', yellow: '#d89b00', green: '#16834f', pink: '#cf5a8d', purple: '#7446b8', cyan: '#087f8c', orange: '#d76a13' };
 
-export function groupCardCapabilities(mode = 'live') {
-  if (mode !== 'live') throw new TypeError('Only live Firefox group cards are supported.');
-  return { detailsLabel: 'Show tabs', draggable: false, showControls: false };
+export function groupCardCapabilities(section) {
+  if (section === 'active') return { actionLabel: 'Close group', detailsLabel: 'Show tabs' };
+  if (section === 'inactive') return { actionLabel: 'Restore group', detailsLabel: 'Show tabs' };
+  throw new TypeError('Group cards must be active or inactive.');
 }
 
-function groupCard(group, variant) {
-  const capabilities = groupCardCapabilities();
+function groupCard(group, variant, section, onAction) {
+  const capabilities = groupCardCapabilities(section);
   const card = document.createElement('article');
   card.className = `group-card group-card--${variant}`;
   const summary = document.createElement('div');
@@ -19,6 +20,12 @@ function groupCard(group, variant) {
   title.textContent = group.title;
   summary.append(dot, title);
 
+  const action = document.createElement('button');
+  action.type = 'button';
+  action.className = 'group-action';
+  action.textContent = capabilities.actionLabel;
+  action.addEventListener('click', () => onAction(group));
+
   const details = document.createElement('details');
   details.className = 'group-details';
   const detailsSummary = document.createElement('summary');
@@ -26,7 +33,7 @@ function groupCard(group, variant) {
   detailsLabel.textContent = capabilities.detailsLabel;
   const meta = document.createElement('span');
   meta.className = 'group-meta';
-  meta.textContent = `${group.tabs.length} tabs · ${group.state}`;
+  meta.textContent = `${group.tabs.length} tabs · ${section === 'active' ? group.state : 'inactive'}`;
   detailsSummary.append(detailsLabel, meta);
   const list = document.createElement('ul');
   for (const tab of group.tabs) {
@@ -35,19 +42,33 @@ function groupCard(group, variant) {
     list.append(item);
   }
   details.append(detailsSummary, list);
-  card.append(summary, details);
+  card.append(summary, action, details);
   return card;
 }
 
-export function renderGroupList(root, groups, { variant = 'expandable', mode = 'live', emptyMessage = 'No tab groups in this window.' } = {}) {
-  groupCardCapabilities(mode);
-  root.replaceChildren();
+function groupSection(title, groups, variant, section, onAction) {
+  const element = document.createElement('section');
+  element.className = `group-section group-section--${section}`;
+  const heading = document.createElement('h2');
+  heading.textContent = title;
+  element.append(heading);
   if (!groups.length) {
     const empty = document.createElement('p');
     empty.className = 'empty-state';
-    empty.textContent = emptyMessage;
-    root.append(empty);
-    return;
+    empty.textContent = `No ${section} groups.`;
+    element.append(empty);
+    return element;
   }
-  groups.forEach((group) => root.append(groupCard(group, variant)));
+  const list = document.createElement('div');
+  list.className = 'group-list';
+  groups.forEach((group) => list.append(groupCard(group, variant, section, onAction)));
+  element.append(list);
+  return element;
+}
+
+export function renderGroupSections(root, { activeGroups, inactiveGroups, variant = 'expandable', onClose, onRestore }) {
+  root.replaceChildren(
+    groupSection('Active groups', activeGroups, variant, 'active', onClose),
+    groupSection('Inactive groups', inactiveGroups, variant, 'inactive', onRestore),
+  );
 }

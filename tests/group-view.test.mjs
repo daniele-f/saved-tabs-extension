@@ -4,14 +4,20 @@ import test from 'node:test';
 const moduleUrl = new URL('../shared/group-view.js', import.meta.url);
 const groupView = await import(moduleUrl).catch(() => ({}));
 
-test('uses read-only capabilities for live Firefox groups', () => {
-  assert.deepEqual(groupView.groupCardCapabilities('live'), {
+test('uses one close action for active Firefox groups', () => {
+  assert.deepEqual(groupView.groupCardCapabilities('active'), {
+    actionLabel: 'Close group',
     detailsLabel: 'Show tabs',
-    draggable: false,
-    showControls: false,
   });
 });
 
-test('rejects the removed mock-card mode', () => {
-  assert.throws(() => groupView.groupCardCapabilities('mock'), /live Firefox/i);
+test('uses one restore action for inactive group snapshots', () => {
+  assert.deepEqual(groupView.groupCardCapabilities('inactive'), {
+    actionLabel: 'Restore group',
+    detailsLabel: 'Show tabs',
+  });
+});
+
+test('rejects unknown group-card sections', () => {
+  assert.throws(() => groupView.groupCardCapabilities('unknown'), /active or inactive/i);
 });
