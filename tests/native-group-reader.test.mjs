@@ -47,3 +47,30 @@ test('preserves every Firefox native tab-group color for rendering', () => {
     ['grey', 'blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan', 'orange'],
   );
 });
+
+function browserEvent() {
+  const listeners = new Set();
+  return {
+    addListener(listener) { listeners.add(listener); },
+    removeListener(listener) { listeners.delete(listener); },
+    emit() { listeners.forEach((listener) => listener()); },
+  };
+}
+
+test('coalesces native group and tab events into one refresh', async () => {
+  const events = Array.from({ length: 8 }, browserEvent);
+  const browserApi = {
+    tabGroups: { onCreated: events[0], onMoved: events[1], onRemoved: events[2], onUpdated: events[3] },
+    tabs: { onCreated: events[4], onMoved: events[5], onRemoved: events[6], onUpdated: events[7] },
+  };
+  let refreshes = 0;
+  const unsubscribe = nativeGroups.subscribeToCurrentWindowGroupChanges(browserApi, () => { refreshes += 1; });
+
+  events[0].emit();
+  events[7].emit();
+  await new Promise((resolve) => queueMicrotask(resolve));
+  unsubscribe();
+  events[3].emit();
+
+  assert.equal(refreshes, 1);
+});

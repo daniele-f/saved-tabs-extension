@@ -45,3 +45,11 @@ test('builds one validated patch for an edited name and color', () => {
     color: 'purple',
   });
 });
+
+test('uses read-only capabilities for live Firefox groups', () => {
+  assert.deepEqual(groupView.groupCardCapabilities('live'), {
+    detailsLabel: 'Show tabs',
+    draggable: false,
+    showControls: false,
+  });
+});

@@ -1,4 +1,10 @@
-const COLOR_VALUES = { yellow: '#d89b00', green: '#16834f', red: '#c63636', blue: '#276cc4', purple: '#7446b8' };
+const COLOR_VALUES = { grey: '#718096', blue: '#276cc4', red: '#c63636', yellow: '#d89b00', green: '#16834f', pink: '#cf5a8d', purple: '#7446b8', cyan: '#087f8c', orange: '#d76a13' };
+
+export function groupCardCapabilities(mode = 'mock') {
+  return mode === 'live'
+    ? { detailsLabel: 'Show tabs', draggable: false, showControls: false }
+    : { detailsLabel: 'Show mock tabs', draggable: true, showControls: true };
+}
 
 export function reorderedGroupIds(ids, draggedId, targetId) {
   const remaining = ids.filter((id) => id !== draggedId);
@@ -55,7 +61,8 @@ function dragHandle(id, title) {
   return element;
 }
 
-function groupCard(group, variant) {
+function groupCard(group, variant, mode) {
+  const capabilities = groupCardCapabilities(mode);
   const card = document.createElement('article');
   card.className = `group-card group-card--${variant}`;
   card.dataset.groupId = group.id;
@@ -70,7 +77,8 @@ function groupCard(group, variant) {
   const meta = document.createElement('span');
   meta.className = 'group-meta';
   meta.textContent = `${group.tabs.length} tabs · ${group.state}`;
-  summary.append(dot, title, dragHandle(group.id, group.title));
+  summary.append(dot, title);
+  if (capabilities.draggable) summary.append(dragHandle(group.id, group.title));
   const actions = document.createElement('div');
   actions.className = 'group-actions';
   actions.append(button(group.state === 'closed' ? 'Restore' : 'Save & close', group.state === 'closed' ? 'restore' : 'save-close', group.id));
@@ -103,7 +111,7 @@ function groupCard(group, variant) {
   details.className = 'group-details';
   const detailsSummary = document.createElement('summary');
   const detailsLabel = document.createElement('span');
-  detailsLabel.textContent = 'Show mock tabs';
+  detailsLabel.textContent = capabilities.detailsLabel;
   detailsSummary.append(detailsLabel, meta);
   const list = document.createElement('ul');
   for (const tab of group.tabs) {
@@ -114,12 +122,13 @@ function groupCard(group, variant) {
   details.append(detailsSummary, list);
   const primary = document.createElement('div');
   primary.className = 'group-primary';
-  primary.append(summary, actions, editor);
+  primary.append(summary);
+  if (capabilities.showControls) primary.append(actions, editor);
   card.append(primary, details);
   return card;
 }
 
-export function renderGroupList(root, groups, { variant = 'compact', emptyMessage = 'No saved tab groups yet.' } = {}) {
+export function renderGroupList(root, groups, { variant = 'compact', mode = 'mock', emptyMessage = 'No saved tab groups yet.' } = {}) {
   root.replaceChildren();
   if (!groups.length) {
     const empty = document.createElement('p');
@@ -128,7 +137,7 @@ export function renderGroupList(root, groups, { variant = 'compact', emptyMessag
     root.append(empty);
     return;
   }
-  groups.forEach((group) => root.append(groupCard(group, variant)));
+  groups.forEach((group) => root.append(groupCard(group, variant, mode)));
 }
 
 export function bindGroupActions(root, store, refresh, announce) {

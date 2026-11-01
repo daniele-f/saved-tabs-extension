@@ -24,3 +24,31 @@ export async function loadCurrentWindowGroups(browserApi) {
       tabs: tabs.map((tab) => ({ title: tab.title || 'Untitled tab' })),
     }));
 }
+
+export function subscribeToCurrentWindowGroupChanges(browserApi, refresh) {
+  let active = true;
+  let queued = false;
+  const scheduleRefresh = () => {
+    if (!active || queued) return;
+    queued = true;
+    queueMicrotask(() => {
+      queued = false;
+      if (active) void refresh();
+    });
+  };
+  const events = [
+    browserApi.tabGroups.onCreated,
+    browserApi.tabGroups.onMoved,
+    browserApi.tabGroups.onRemoved,
+    browserApi.tabGroups.onUpdated,
+    browserApi.tabs.onCreated,
+    browserApi.tabs.onMoved,
+    browserApi.tabs.onRemoved,
+    browserApi.tabs.onUpdated,
+  ];
+  events.forEach((event) => event.addListener(scheduleRefresh));
+  return () => {
+    active = false;
+    events.forEach((event) => event.removeListener(scheduleRefresh));
+  };
+}
