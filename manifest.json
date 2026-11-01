@@ -16,6 +16,7 @@
   },
   "sidebar_action": {
     "default_title": "Saved tab groups",
+    "default_icon": "icons/saved-groups.svg",
     "default_panel": "sidebar/sidebar.html"
   },
   "options_ui": {
