@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'scrollbarTestGroups';
+const STORAGE_KEY = 'savedGroups';
 const COLORS = new Set(['yellow', 'green', 'red', 'blue', 'purple']);
 const STATES = new Set(['open', 'closed']);
 

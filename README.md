@@ -4,7 +4,7 @@ A Firefox Desktop Manifest V3 prototype for comparing a toolbar popup and sideba
 
 ## Safety boundary
 
-This prototype currently starts with twenty temporary scroll-test groups. It never reads, creates, opens, closes, groups, ungroups, or rearranges browser tabs.
+This prototype starts with no group data. It never reads, creates, opens, closes, groups, ungroups, or rearranges browser tabs.
 
 The prototype does **not** create or modify native bookmarks.
 
@@ -23,9 +23,9 @@ Firefox removes temporary add-ons when it restarts. The project targets the curr
 - **Toolbar popup:** Firefox initially places the extension action on the bookmarks toolbar, but it can put the button in the `>>` overflow menu when that toolbar has insufficient space. Click the extension button to open the expandable group list. Use **Customize Toolbar** to move it; the extension cannot force a later placement.
 - **Sidebar:** choose **Open sidebar** in UX Playground or enable it through Firefox’s sidebar UI. It provides the empty state and will become the persistent group browser once real data support is connected.
 
-## Temporary test data
+## Current prototype state
 
-Twenty `Scroll test` groups are seeded from `data/default-groups.json` so the popup and sidebar can be evaluated with a scrollbar. They are temporary test data and will be removed before real Firefox group-data integration.
+There are no seeded demonstration groups. Create groups through Firefox’s normal tab-group UI; this prototype will remain empty until the real Firefox group-data integration is built.
 
 ## Feasibility comparison
 
