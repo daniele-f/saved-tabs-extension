@@ -1,10 +1,10 @@
 const COLOR_VALUES = { yellow: '#d89b00', green: '#16834f', red: '#c63636', blue: '#276cc4', purple: '#7446b8' };
 
 export function reorderedGroupIds(ids, draggedId, targetId) {
-  if (draggedId === targetId) return [...ids];
   const remaining = ids.filter((id) => id !== draggedId);
-  const targetIndex = remaining.indexOf(targetId);
-  if (targetIndex < 0 || !ids.includes(draggedId)) return [...ids];
+  if (!ids.includes(draggedId)) return [...ids];
+  const targetIndex = targetId === null ? remaining.length : remaining.indexOf(targetId);
+  if (targetIndex < 0) return [...ids];
   remaining.splice(targetIndex, 0, draggedId);
   return remaining;
 }
@@ -133,11 +133,39 @@ export function renderGroupList(root, groups, { variant = 'compact', emptyMessag
 
 export function bindGroupActions(root, store, refresh, announce) {
   let activeDrag = null;
+  const clearDropPosition = () => {
+    root.querySelectorAll('.is-drop-before, .is-drop-after').forEach((element) => {
+      element.classList.remove('is-drop-before', 'is-drop-after');
+    });
+  };
+  const updateDropPosition = (clientX, clientY) => {
+    const listRect = root.getBoundingClientRect();
+    const withinList = clientX >= listRect.left - 24 && clientX <= listRect.right + 24
+      && clientY >= listRect.top - 24 && clientY <= listRect.bottom + 24;
+    clearDropPosition();
+    activeDrag.hasDropPosition = false;
+    if (!withinList) return;
+    const cards = [...root.querySelectorAll('.group-card')].filter((card) => card.dataset.groupId !== activeDrag.id);
+    if (!cards.length) return;
+    const beforeCard = cards.find((card) => {
+      const rect = card.getBoundingClientRect();
+      return clientY < rect.top + rect.height / 2;
+    });
+    activeDrag.hasDropPosition = true;
+    if (beforeCard) {
+      beforeCard.classList.add('is-drop-before');
+      activeDrag.beforeId = beforeCard.dataset.groupId;
+      return;
+    }
+    const lastCard = cards.at(-1);
+    lastCard.classList.add('is-drop-after');
+    activeDrag.beforeId = null;
+  };
   const clearDragState = (settle = false) => {
     if (!activeDrag) return;
     const { card, preview } = activeDrag;
     card.classList.remove('is-dragging');
-    root.querySelectorAll('.is-drop-target').forEach((element) => element.classList.remove('is-drop-target'));
+    clearDropPosition();
     if (settle) {
       preview.classList.add('is-settling');
       window.setTimeout(() => preview.remove(), 140);
@@ -160,30 +188,23 @@ export function bindGroupActions(root, store, refresh, announce) {
     preview.style.left = `${rect.left}px`;
     preview.style.top = `${rect.top}px`;
     document.body.append(preview);
-    activeDrag = { id: handle.dataset.groupId, card, handle, preview, startX: event.clientX, startY: event.clientY, targetId: null };
+    activeDrag = { id: handle.dataset.groupId, card, handle, preview, startX: event.clientX, startY: event.clientY, beforeId: null, hasDropPosition: false };
     handle.setPointerCapture(event.pointerId);
   });
   root.addEventListener('pointermove', (event) => {
     if (!activeDrag) return;
-    const { preview, startX, startY, id } = activeDrag;
+    const { preview, startX, startY } = activeDrag;
     preview.style.transform = `translate3d(${event.clientX - startX}px, ${event.clientY - startY}px, 0) rotate(2deg)`;
-    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.group-card');
-    root.querySelectorAll('.is-drop-target').forEach((element) => element.classList.remove('is-drop-target'));
-    if (target && target.dataset.groupId !== id) {
-      target.classList.add('is-drop-target');
-      activeDrag.targetId = target.dataset.groupId;
-    } else {
-      activeDrag.targetId = null;
-    }
+    updateDropPosition(event.clientX, event.clientY);
   });
   root.addEventListener('pointercancel', () => clearDragState());
   root.addEventListener('pointerup', async () => {
     if (!activeDrag) return;
-    const { id, targetId } = activeDrag;
+    const { id, beforeId, hasDropPosition } = activeDrag;
     clearDragState(true);
-    if (!targetId) return;
+    if (!hasDropPosition) return;
     const groups = await store.loadGroups();
-    await store.reorderGroups(reorderedGroupIds(groups.map((group) => group.id), id, targetId));
+    await store.reorderGroups(reorderedGroupIds(groups.map((group) => group.id), id, beforeId));
     announce('Reordered mock groups.');
     await refresh();
   });

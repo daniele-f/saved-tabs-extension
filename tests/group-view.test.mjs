@@ -27,12 +27,16 @@ test('rejects an empty mock-group rename', () => {
   assert.throws(() => groupView.buildGroupMutation(vacatures, { type: 'rename', title: '   ' }), /title/i);
 });
 
-test('moves a dragged group to the drop target position', () => {
+test('moves a dragged group into the slot before another group', () => {
   assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python', 'peppol'], 'peppol', 'vacatures'), ['peppol', 'vacatures', 'python']);
 });
 
-test('does not reorder when the drop target is the dragged group', () => {
-  assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python'], 'python', 'python'), ['vacatures', 'python']);
+test('moves a dragged group into the slot after the final group', () => {
+  assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python', 'peppol'], 'vacatures', null), ['python', 'peppol', 'vacatures']);
+});
+
+test('keeps a group in place when dropped into its current slot', () => {
+  assert.deepEqual(groupView.reorderedGroupIds(['vacatures', 'python'], 'python', null), ['vacatures', 'python']);
 });
 
 test('builds one validated patch for an edited name and color', () => {
