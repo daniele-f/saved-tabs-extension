@@ -140,8 +140,7 @@ export function bindGroupActions(root, store, refresh, announce) {
   };
   const updateDropPosition = (clientX, clientY) => {
     const listRect = root.getBoundingClientRect();
-    const withinList = clientX >= listRect.left - 24 && clientX <= listRect.right + 24
-      && clientY >= listRect.top - 24 && clientY <= listRect.bottom + 24;
+    const withinList = clientX >= listRect.left - 24 && clientX <= listRect.right + 24;
     clearDropPosition();
     activeDrag.hasDropPosition = false;
     if (!withinList) return;
