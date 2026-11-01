@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Saved Tab Groups — UX Playground",
   "version": "0.1.0",
-  "description": "An empty-state playground for saved tab group interfaces.",
+  "description": "A saved tab group interface playground with temporary scroll-test data.",
   "browser_specific_settings": {
     "gecko": { "id": "saved-tab-groups-ux-playground@daniele-f" }
   },
