@@ -7,11 +7,11 @@ const nativeGroups = await import(moduleUrl).catch(() => ({}));
 function browserApiFixture() {
   const tabsByGroup = new Map([
     [15, [
-      { index: 4, title: 'Firefox source' },
-      { index: 3, title: 'MDN' },
+      { id: 151, index: 4, title: 'Firefox source', url: 'https://firefox-source.example/' },
+      { id: 150, index: 3, title: 'MDN', url: 'https://developer.mozilla.org/' },
     ]],
-    [16, [{ index: 8, title: 'Other window tab' }]],
-    [17, [{ index: 1, title: 'First tab' }]],
+    [16, [{ id: 160, index: 8, title: 'Other window tab', url: 'https://other.example/' }]],
+    [17, [{ id: 170, index: 1, title: 'First tab', url: 'https://first.example/' }]],
   ]);
   return {
     windows: { getCurrent: async () => ({ id: 1 }) },
@@ -31,12 +31,12 @@ test('reads only current-window groups with ordered native tabs', async () => {
 
   assert.deepEqual(groups, [
     {
-      id: '17', title: 'Untitled group', color: 'grey', state: 'expanded',
-      tabs: [{ title: 'First tab' }],
+      id: '17', nativeGroupId: 17, windowId: 1, title: 'Untitled group', color: 'grey', collapsed: false, state: 'expanded',
+      tabs: [{ id: 170, title: 'First tab', url: 'https://first.example/' }],
     },
     {
-      id: '15', title: 'Research', color: 'purple', state: 'collapsed',
-      tabs: [{ title: 'MDN' }, { title: 'Firefox source' }],
+      id: '15', nativeGroupId: 15, windowId: 1, title: 'Research', color: 'purple', collapsed: true, state: 'collapsed',
+      tabs: [{ id: 150, title: 'MDN', url: 'https://developer.mozilla.org/' }, { id: 151, title: 'Firefox source', url: 'https://firefox-source.example/' }],
     },
   ]);
 });

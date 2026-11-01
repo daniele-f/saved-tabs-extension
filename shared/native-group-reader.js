@@ -18,10 +18,13 @@ export async function loadCurrentWindowGroups(browserApi) {
     .sort((a, b) => (a.tabs[0]?.index ?? Infinity) - (b.tabs[0]?.index ?? Infinity))
     .map(({ group, tabs }) => ({
       id: String(group.id),
+      nativeGroupId: group.id,
+      windowId: group.windowId,
       title: group.title || 'Untitled group',
       color: nativeGroupColor(group.color),
+      collapsed: Boolean(group.collapsed),
       state: group.collapsed ? 'collapsed' : 'expanded',
-      tabs: tabs.map((tab) => ({ title: tab.title || 'Untitled tab' })),
+      tabs: tabs.map((tab) => ({ id: tab.id, title: tab.title || 'Untitled tab', url: tab.url })),
     }));
 }
 
