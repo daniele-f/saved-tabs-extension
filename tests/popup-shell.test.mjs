@@ -11,6 +11,27 @@ test('ships a single expandable popup layout without a layout picker', async () 
   assert.equal(html.includes('Minimal list'), false);
 });
 
+test('keeps the popup fixed while the sidebar fills its available width', async () => {
+  const [css, popup, sidebar] = await Promise.all([
+    readFile(new URL('../shared/ui.css', import.meta.url), 'utf8'),
+    readFile(new URL('../popup/popup.html', import.meta.url), 'utf8'),
+    readFile(new URL('../sidebar/sidebar.html', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(popup, /<body class="popup">/);
+  assert.match(sidebar, /<body class="sidebar">/);
+  assert.match(css, /body\.popup\s*\{[^}]*width:\s*300px/s);
+  assert.match(css, /body\.sidebar\s*\{[^}]*width:\s*100%/s);
+});
+
+test('uses a smaller borderless chevron button', async () => {
+  const css = await readFile(new URL('../shared/ui.css', import.meta.url), 'utf8');
+
+  assert.match(css, /\.group-toggle\s*\{[^}]*border:\s*0/s);
+  assert.match(css, /\.toggle-chevron\s*\{[^}]*width:\s*16px[^}]*height:\s*16px/s);
+  assert.match(css, /\.toggle-chevron span\s*\{[^}]*height:\s*12px/s);
+});
+
 test('connects both panels to live groups and inactive snapshots', async () => {
   const [popup, sidebar] = await Promise.all([
     readFile(new URL('../popup/popup.js', import.meta.url), 'utf8'),
@@ -42,10 +63,10 @@ test('uses the dark-focus panel treatment with action before disclosure', async 
   assert.match(css, /\.group-toggle\s*\{[^}]*grid-column:\s*3/s);
   assert.match(css, /\.toggle-chevron\s*\{[^}]*transition:\s*\.25s\s*ease-in-out/s);
   assert.match(css, /\.toggle-chevron span\s*\{[^}]*transition:\s*\.25s\s*ease-in-out/s);
-  assert.match(css, /\.toggle-chevron span:nth-child\(1\)\s*\{[^}]*transform:\s*translateX\(-5px\)\s+rotate\(-50deg\)/s);
-  assert.match(css, /\.toggle-chevron span:nth-child\(2\)\s*\{[^}]*transform:\s*translateX\(5px\)\s+rotate\(50deg\)/s);
-  assert.match(css, /\.group-toggle\[aria-expanded="true"\]\s+\.toggle-chevron span:nth-child\(1\)\s*\{[^}]*transform:\s*translateX\(-5px\)\s+rotate\(-130deg\)/s);
-  assert.match(css, /\.group-toggle\[aria-expanded="true"\]\s+\.toggle-chevron span:nth-child\(2\)\s*\{[^}]*transform:\s*translateX\(5px\)\s+rotate\(130deg\)/s);
+  assert.match(css, /\.toggle-chevron span:nth-child\(1\)\s*\{[^}]*transform:\s*translateX\(-4px\)\s+rotate\(-50deg\)/s);
+  assert.match(css, /\.toggle-chevron span:nth-child\(2\)\s*\{[^}]*transform:\s*translateX\(4px\)\s+rotate\(50deg\)/s);
+  assert.match(css, /\.group-toggle\[aria-expanded="true"\]\s+\.toggle-chevron span:nth-child\(1\)\s*\{[^}]*transform:\s*translateX\(-4px\)\s+rotate\(-130deg\)/s);
+  assert.match(css, /\.group-toggle\[aria-expanded="true"\]\s+\.toggle-chevron span:nth-child\(2\)\s*\{[^}]*transform:\s*translateX\(4px\)\s+rotate\(130deg\)/s);
   assert.match(groupView, /toggleChevron\.className = 'toggle-chevron'/);
   assert.match(css, /\.group-details\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s);
   assert.match(css, /\.group-action\s*\{[^}]*grid-column:\s*2/s);
