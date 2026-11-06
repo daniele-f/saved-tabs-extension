@@ -32,7 +32,7 @@ Create a native Firefox group with two ordinary https tabs. Open the extension p
 
 ## Submission checklist
 
-- Upload dist/saved-tab-groups-0.1.0.zip as the extension package.
+- Upload dist/saved-tab-groups-1.0.0.zip as the extension package.
 - Choose MIT and use the description above.
 - Paste PRIVACY.md into the privacy-policy field.
 - Add screenshots from a clean Firefox profile using non-sensitive example tabs.

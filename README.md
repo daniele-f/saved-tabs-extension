@@ -44,6 +44,6 @@ rg -n "browser\.(tabs|tabGroups|sessions)|chrome\.(tabs|tabGroups|sessions)" .
 
 ## Release
 
-Run `npm test`, `npx --yes web-ext lint`, then `npm run package` on Windows. Upload `dist/saved-tab-groups-0.1.0.zip` to Mozilla Add-ons. The package contains runtime sources and the MIT license, without tests or development documents. No compilation is required.
+Run `npm test`, `npx --yes web-ext lint`, then `npm run package` on Windows. Upload `dist/saved-tab-groups-1.0.0.zip` to Mozilla Add-ons. The package contains runtime sources and the MIT license, without tests or development documents. No compilation is required.
 
 See [submission copy and reviewer instructions](docs/amo-listing.md), [privacy policy](PRIVACY.md), and [MIT license](LICENSE). Saved groups contain URLs rather than complete page sessions. Uninstalling the extension removes saved snapshots.

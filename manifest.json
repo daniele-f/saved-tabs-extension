@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Saved Tab Groups",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Save, close, search, and restore Firefox tab groups from a toolbar popup or sidebar.",
   "author": "daniele-f",
   "homepage_url": "https://github.com/daniele-f/saved-tabs-extension",
